@@ -26,7 +26,9 @@
 (defn post-msg!
   ([{:keys [token channel message attachment-filename] :as args}]
    (println (format "Post message to channel %s with attachment %s" channel attachment-filename))
-   (post-msg! token channel message [{:pretext attachment-filename :text (slurp attachment-filename)}]))
+   (if attachment-filename
+     (post-msg! token channel message [{:pretext attachment-filename :text (slurp attachment-filename)}])
+     (post-msg! token channel message nil)))
   ([token channel message attachments]
    (let [attachments-list (java.util.ArrayList.)
          _                (doseq [{:keys [pretext text] :as attachment} attachments]
