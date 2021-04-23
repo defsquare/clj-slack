@@ -25,10 +25,14 @@
 
 (defn post-msg!
   ([{:keys [token channel message message-filename attachment-filename] :as args}]
-   (println (format "Post message to channel %s with attachment %s" channel attachment-filename))
-   (if attachment-filename
-     (post-msg! token channel (if message-filename (slurp message-filename) message) [{:pretext attachment-filename :text (slurp attachment-filename)}])
-     (post-msg! token channel (if message-filename (slurp message-filename) message) nil)))
+   (println (str "Post message to channel " channel))
+   (when attachment-filename
+     (print " with attachment " attachment-filename))
+   (when message-filename
+     (println " with message in file" message-filename))
+   (post-msg! token channel
+              (if (empty? message-filename) message (slurp message-filename) )
+              (if (empty? attachment-filename) nil [{:pretext attachment-filename :text (slurp attachment-filename)}])))
   ([token channel message attachments]
    (let [attachments-list (java.util.ArrayList.)
          _                (doseq [{:keys [pretext text] :as attachment} attachments]
